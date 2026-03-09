@@ -1,0 +1,44 @@
+@model FilmSitesi.Web.Models.ViewModels.MovieSearchViewModel
+
+<h2>Film Ara</h2>
+
+<form asp-action="Search" method="post">
+
+    <input asp-for="Query" placeholder="Film adı yaz..." />
+
+    <button type="submit">Ara</button>
+
+</form>
+
+<hr />
+
+@if (Model.Results.Any())
+{
+    <h3>Sonuçlar</h3>
+
+    <ul>
+        @foreach (var movie in Model.Results)
+        {
+            <li>
+                <strong>@movie.Title</strong>
+                (@movie.ReleaseDate)
+
+                <br />
+
+                @if (!string.IsNullOrEmpty(movie.PosterPath))
+                {
+                    <img src="@($"https://image.tmdb.org/t/p/w200{movie.PosterPath}")" />
+                }
+
+                <p>@movie.Overview</p>
+
+                <hr />
+            </li>
+            <a asp-controller="Movies"
+                asp-action="Detail"
+                asp-route-id="@movie.Id">
+                Detay
+            </a>
+        }
+    </ul>
+}

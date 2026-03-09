@@ -1,0 +1,14 @@
+@model FilmSitesi.Web.Models.Entities.Movie
+
+<h2>@Model.Title</h2>
+
+@if (!string.IsNullOrEmpty(Model.PosterPath))
+{
+    <img src="https://image.tmdb.org/t/p/w300@Model.PosterPath" />
+}
+
+<p>@Model.Overview</p>
+
+<p>Puan: @Model.VoteAverage</p>
+
+<p>Dil: @Model.OriginalLanguage</p>
