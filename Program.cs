@@ -1,6 +1,9 @@
 using FilmSitesi.Web.Data;
+using FilmSitesi.Web.Models.Entities;
 using FilmSitesi.Web.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,10 @@ builder.Services.AddControllersWithViews();
 // SQLite + DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddHttpClient<ITmdbService, TmdbService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
@@ -30,6 +37,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

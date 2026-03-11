@@ -125,3 +125,7 @@ C:\MTA\FilmSitesi\FilmSitesi.Web\obj\Debug\net8.0\refint\FilmSitesi.Web.dll
 C:\MTA\FilmSitesi\FilmSitesi.Web\obj\Debug\net8.0\FilmSitesi.Web.pdb
 C:\MTA\FilmSitesi\FilmSitesi.Web\obj\Debug\net8.0\FilmSitesi.Web.genruntimeconfig.cache
 C:\MTA\FilmSitesi\FilmSitesi.Web\obj\Debug\net8.0\ref\FilmSitesi.Web.dll
+C:\MTA\FilmSitesi\FilmSitesi.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\MTA\FilmSitesi\FilmSitesi.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.UI.dll
+C:\MTA\FilmSitesi\FilmSitesi.Web\obj\Debug\net8.0\FilmSitesi.Web.MvcApplicationPartsAssemblyInfo.cs
+C:\MTA\FilmSitesi\FilmSitesi.Web\obj\Debug\net8.0\FilmSitesi.Web.sourcelink.json
