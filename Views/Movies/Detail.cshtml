@@ -27,6 +27,61 @@
 
 <hr />
 
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <h3>Watchlist</h3>
+
+    @if (TempData["WatchlistError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["WatchlistError"]
+        </div>
+    }
+
+    <form asp-action="AddToWatchlist" method="post" class="mb-3">
+        <input type="hidden" name="movieId" value="@Model.Movie.Id" />
+
+        <div class="mb-3">
+            <label class="form-label">Öncelik</label>
+            <select name="priority" class="form-select">
+                <option value="1" selected="@(Model.WatchlistPriority == 1 ? "selected" : null)">1 - Çok yüksek</option>
+                <option value="2" selected="@(Model.WatchlistPriority == 2 ? "selected" : null)">2 - Yüksek</option>
+                <option value="3" selected="@(Model.WatchlistPriority == 3 ? "selected" : null)">3 - Orta</option>
+                <option value="4" selected="@(Model.WatchlistPriority == 4 ? "selected" : null)">4 - Düşük</option>
+                <option value="5" selected="@(Model.WatchlistPriority == 5 ? "selected" : null)">5 - Çok düşük</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Not</label>
+            <textarea name="notes" class="form-control" rows="3">@Model.WatchlistNotes</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-warning">
+            @(Model.IsInWatchlist ? "Watchlist'i Güncelle" : "Watchlist'e Ekle")
+        </button>
+    </form>
+
+    @if (Model.IsInWatchlist)
+    {
+        <form asp-action="RemoveFromWatchlist" method="post">
+            <input type="hidden" name="movieId" value="@Model.Movie.Id" />
+            <button type="submit" class="btn btn-outline-danger">Watchlist'ten Çıkar</button>
+        </form>
+    }
+}
+else
+{
+    <p>
+        Watchlist kullanmak için
+        <a asp-area="Identity" asp-page="/Account/Login">giriş yap</a>.
+    </p>
+}
+
+
+
+
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
     <h3>Puan Ver / Yorum Yaz</h3>

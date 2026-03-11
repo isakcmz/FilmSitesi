@@ -6,6 +6,7 @@ using FilmSitesi.Web.Services;
 using FilmSitesi.Web.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Build.Experimental.ProjectCache;
 
 
 namespace FilmSitesi.Web.Controllers;
@@ -45,6 +46,21 @@ public class MoviesController : Controller
             Movie = movie,
             Reviews = reviews
         };
+
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user != null)
+        {
+            var watchlistItem = await _context.WatchlistItems
+                .FirstOrDefaultAsync(w => w.UserId == user.Id && w.MovieId == movie.Id);
+
+            if (watchlistItem != null)
+            {
+                viewModel.IsInWatchlist = true;
+                viewModel.WatchlistPriority = watchlistItem.Priority;
+                viewModel.WatchlistNotes = watchlistItem.Notes;
+            }
+        }
 
         return View(viewModel);
     }
@@ -99,6 +115,88 @@ public class MoviesController : Controller
 
         return RedirectToAction("Detail", new { id = movie.TmdbId });
     }
+
+
+
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> AddToWatchlist(int movieId, int priority, string notes)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+            return Challenge();
+
+        if (priority < 1 || priority > 5)
+        {
+            TempData["WatchlistError"] = "Öncelik 1 ile 5 arasında olmalıdır.";
+            var movieForRedirect = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
+            if (movieForRedirect == null) return NotFound();
+            return RedirectToAction("Detail", new { id = movieForRedirect.TmdbId });
+        }
+
+        var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
+
+        if (movie == null)
+            return NotFound();
+
+        var existingItem = await _context.WatchlistItems
+            .FirstOrDefaultAsync(w => w.UserId == user.Id && w.MovieId == movieId);
+
+        if (existingItem != null)
+        {
+            existingItem.Priority = priority;
+            existingItem.Notes = notes ?? string.Empty;
+        }
+        else
+        {
+            var item = new WatchlistItem
+            {
+                UserId = user.Id,
+                MovieId = movieId,
+                Priority = priority,
+                Notes = notes ?? string.Empty,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.WatchlistItems.Add(item);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Detail", new { id = movie.TmdbId });
+    }
+
+
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> RemoveFromWatchlist(int movieId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+            return Challenge();
+
+        var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
+
+        if (movie == null)
+            return NotFound();
+
+        var existingItem = await _context.WatchlistItems
+            .FirstOrDefaultAsync(w => w.UserId == user.Id && w.MovieId == movieId);
+
+        if (existingItem != null)
+        {
+            _context.WatchlistItems.Remove(existingItem);
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction("Detail", new { id = movie.TmdbId });
+    }
+
+
 
 
 

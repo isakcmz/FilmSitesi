@@ -11,4 +11,9 @@ public class MovieDetailViewModel
     public string UserComment { get; set; } = string.Empty;
 
     public List<Review> Reviews { get; set; } = new();
+    public bool IsInWatchlist { get; set; }
+
+    public int WatchlistPriority { get; set; } = 3;
+
+    public string WatchlistNotes { get; set; } = string.Empty;
 }
