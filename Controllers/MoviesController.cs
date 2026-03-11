@@ -1,7 +1,11 @@
+using FilmSitesi.Web.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using FilmSitesi.Web.Models.ViewModels;
 using FilmSitesi.Web.Services;
 using FilmSitesi.Web.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace FilmSitesi.Web.Controllers;
@@ -10,12 +14,16 @@ public class MoviesController : Controller
 {
     private readonly IMovieService _movieService;
     private readonly ITmdbService _tmdbService;
+    private readonly AppDbContext _context;
+    private readonly UserManager<AppUser> _userManager;
 
 
-    public MoviesController(IMovieService movieService, ITmdbService tmdbService)
+    public MoviesController(IMovieService movieService, ITmdbService tmdbService, AppDbContext context, UserManager<AppUser> userManager)
     {
         _movieService = movieService;
         _tmdbService = tmdbService;
+        _context = context;
+        _userManager = userManager;
     }
 
 
@@ -26,8 +34,72 @@ public class MoviesController : Controller
         if (movie == null)
             return NotFound();
 
-        return View(movie);
+        var reviews = await _context.Reviews
+            .Include(r => r.User)
+            .Where(r => r.MovieId == movie.Id)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        var viewModel = new MovieDetailViewModel
+        {
+            Movie = movie,
+            Reviews = reviews
+        };
+
+        return View(viewModel);
     }
+
+
+
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> AddReview(int movieId, double rating, string comment)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+            return Challenge();
+
+        if (rating < 0.5 || rating > 5 || rating % 0.5 != 0)
+        {
+            TempData["ReviewError"] = "Puan 0.5 ile 5 arasında ve 0.5 artışlarla olmalıdır.";
+            return RedirectToAction("Detail", new { id = movieId });
+        }
+
+        var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
+
+        if (movie == null)
+            return NotFound();
+
+        var existingReview = await _context.Reviews
+            .FirstOrDefaultAsync(r => r.UserId == user.Id && r.MovieId == movieId);
+
+        if (existingReview != null)
+        {
+            existingReview.Rating = rating;
+            existingReview.Comment = comment ?? string.Empty;
+            existingReview.CreatedAt = DateTime.UtcNow;
+        }
+        else
+        {
+            var review = new Review
+            {
+                UserId = user.Id,
+                MovieId = movieId,
+                Rating = rating,
+                Comment = comment ?? string.Empty,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Reviews.Add(review);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Detail", new { id = movie.TmdbId });
+    }
+
 
 
 

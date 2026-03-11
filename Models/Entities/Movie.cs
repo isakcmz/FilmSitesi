@@ -23,4 +23,6 @@ public class Movie
     public string OriginalLanguage { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public List<Review> Reviews { get; set; } = new();
+    public List<WatchlistItem> WatchlistItems { get; set; } = new();
 }

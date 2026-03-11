@@ -11,6 +11,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     }
 
     public DbSet<Movie> Movies => Set<Movie>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,5 +32,29 @@ public class AppDbContext : IdentityDbContext<AppUser>
         modelBuilder.Entity<Movie>()
             .Property(m => m.OriginalLanguage)
             .HasMaxLength(20);
+
+        modelBuilder.Entity<Review>()
+            .Property(r => r.Rating)
+            .HasDefaultValue(0);
+
+        modelBuilder.Entity<Review>()
+            .Property(r => r.Comment)
+            .HasMaxLength(2000);
+
+        modelBuilder.Entity<Review>()
+            .HasOne(r => r.User)
+            .WithMany(u => u.Reviews)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Review>()
+            .HasOne(r => r.Movie)
+            .WithMany(m => m.Reviews)
+            .HasForeignKey(r => r.MovieId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Review>()
+            .HasIndex(r => new { r.UserId, r.MovieId })
+            .IsUnique();
     }
 }
