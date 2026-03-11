@@ -199,6 +199,38 @@ public class MoviesController : Controller
 
 
 
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Watchlist()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+            return Challenge();
+
+        var items = await _context.WatchlistItems
+            .Include(w => w.Movie)
+            .Where(w => w.UserId == user.Id)
+            .OrderBy(w => w.Priority)
+            .ThenByDescending(w => w.CreatedAt)
+            .Select(w => new WatchlistItemViewModel
+            {
+                MovieId = w.MovieId,
+                TmdbId = w.Movie.TmdbId,
+                Title = w.Movie.Title,
+                PosterPath = w.Movie.PosterPath,
+                Priority = w.Priority,
+                Notes = w.Notes,
+                CreatedAt = w.CreatedAt
+            })
+            .ToListAsync();
+
+        return View(items);
+    }
+
+
+
+
 
 
     [HttpGet]

@@ -1,0 +1,80 @@
+@using System.Diagnostics
+@model List<FilmSitesi.Web.Models.ViewModels.WatchlistItemViewModel>
+
+@{
+    ViewData["Title"] = "Watchlist";
+}
+
+<h1>Watchlist</h1>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    @if (!string.IsNullOrWhiteSpace(item.PosterPath))
+                    {
+                        <img class="card-img-top"
+                             src="@($"https://image.tmdb.org/t/p/w500{item.PosterPath}")"
+                             alt="@item.Title" />
+                    }
+
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Title</h5>
+
+                        <p class="card-text">
+                            <strong>Öncelik:</strong>
+                            @switch (item.Priority)
+                            {
+                                case 1:
+                                    <span>Çok Yüksek</span>
+                                    break;
+                                case 2:
+                                    <span>Yüksek</span>
+                                    break;
+                                case 3:
+                                    <span>Orta</span>
+                                    break;
+                                case 4:
+                                    <span>Düşük</span>
+                                    break;
+                                case 5:
+                                    <span>Çok Düşük</span>
+                                    break;
+                                default:
+                                    <span>-</span>
+                                    break;
+                            }
+                        </p>
+
+                        @if (!string.IsNullOrWhiteSpace(item.Notes))
+                        {
+                            <p class="card-text">
+                                <strong>Not:</strong> @item.Notes
+                            </p>
+                        }
+
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Eklenme: @item.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                            </small>
+                        </p>
+
+                        <a asp-controller="Movies"
+                           asp-action="Detail"
+                           asp-route-id="@item.TmdbId"
+                           class="btn btn-primary">
+                            Filme Git
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Watchlist'in boş.</p>
+}
