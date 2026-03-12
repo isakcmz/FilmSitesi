@@ -34,7 +34,7 @@ public class ProfileController : Controller
             .CountAsync(w => w.UserId == user.Id);
 
         var reviewCount = await _context.Reviews
-            .CountAsync(r => r.UserId == user.Id);
+            .CountAsync(r => r.UserId == user.Id && !string.IsNullOrWhiteSpace(r.Comment));
 
         var recentWatched = await _context.WatchedMovies
             .Include(w => w.Movie)
@@ -45,7 +45,7 @@ public class ProfileController : Controller
 
         var recentReviews = await _context.Reviews
             .Include(r => r.Movie)
-            .Where(r => r.UserId == user.Id)
+            .Where(r => r.UserId == user.Id && !string.IsNullOrWhiteSpace(r.Comment))
             .OrderByDescending(r => r.CreatedAt)
             .Take(5)
             .ToListAsync();
