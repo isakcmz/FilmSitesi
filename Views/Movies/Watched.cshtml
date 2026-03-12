@@ -4,50 +4,59 @@
     ViewData["Title"] = "İzlediklerim";
 }
 
-<h1>İzlediklerim</h1>
+<div class="list-page">
+    <div class="list-page-header">
+        <h1>İzlediklerim</h1>
+        <p>İzlediğin filmler ve izleme notların.</p>
+    </div>
 
-@if (Model != null && Model.Any())
-{
-    <div class="row">
-        @foreach (var item in Model)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    @if (!string.IsNullOrWhiteSpace(item.PosterPath))
-                    {
-                        <img class="card-img-top"
-                             src="@($"https://image.tmdb.org/t/p/w500{item.PosterPath}")"
-                             alt="@item.Title" />
-                    }
+    @if (Model != null && Model.Any())
+    {
+        <div class="movie-grid">
+            @foreach (var item in Model)
+            {
+                <div class="movie-card">
+                    <div class="movie-poster-wrapper">
+                        @if (!string.IsNullOrWhiteSpace(item.PosterPath))
+                        {
+                            <img class="movie-poster"
+                                 src="@($"https://image.tmdb.org/t/p/w500{item.PosterPath}")"
+                                 alt="@item.Title" />
+                        }
+                        else
+                        {
+                            <div class="movie-poster-placeholder">No Image</div>
+                        }
+                    </div>
 
-                    <div class="card-body">
-                        <h5 class="card-title">@item.Title</h5>
+                    <div class="movie-card-body">
+                        <h5 class="movie-title">@item.Title</h5>
 
-                        <p class="card-text">
-                            <strong>İzleme Tarihi:</strong>
-                            @item.WatchedDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
-                        </p>
+                        <div class="movie-meta">
+                            <span>@item.WatchedDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</span>
+                        </div>
 
                         @if (!string.IsNullOrWhiteSpace(item.Notes))
                         {
-                            <p class="card-text">
-                                <strong>Not:</strong> @item.Notes
-                            </p>
+                            <div class="activity-note mb-3">@item.Notes</div>
                         }
 
                         <a asp-controller="Movies"
                            asp-action="Detail"
                            asp-route-id="@item.TmdbId"
-                           class="btn btn-primary">
+                           class="btn btn-primary w-100">
                             Filme Git
                         </a>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <p>Henüz izlediğin film yok.</p>
-}
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-feed">
+            <h3>Henüz izlediğin film yok</h3>
+            <p>Bir film detayına girip “İzledim” dediğinde burada görünecek.</p>
+        </div>
+    }
+</div>
