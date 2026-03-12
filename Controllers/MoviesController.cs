@@ -93,7 +93,7 @@ public class MoviesController : Controller
                 viewModel.WatchedCount = watchedItems.Count;
                 viewModel.WatchedNotes = watchedItems.First().Notes;
             }
-            
+
         }
 
         return View(viewModel);
@@ -167,20 +167,12 @@ public class MoviesController : Controller
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> AddToWatchlist(int movieId, int priority, string notes)
+    public async Task<IActionResult> AddToWatchlist(int movieId)
     {
         var user = await _userManager.GetUserAsync(User);
 
         if (user == null)
             return Challenge();
-
-        if (priority < 1 || priority > 5)
-        {
-            TempData["WatchlistError"] = "Öncelik 1 ile 5 arasında olmalıdır.";
-            var movieForRedirect = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
-            if (movieForRedirect == null) return NotFound();
-            return RedirectToAction("Detail", new { id = movieForRedirect.TmdbId });
-        }
 
         var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
 
@@ -190,37 +182,29 @@ public class MoviesController : Controller
         var existingItem = await _context.WatchlistItems
             .FirstOrDefaultAsync(w => w.UserId == user.Id && w.MovieId == movieId);
 
-        if (existingItem != null)
-        {
-            existingItem.Priority = priority;
-            existingItem.Notes = notes ?? string.Empty;
-        }
-        else
+        if (existingItem == null)
         {
             var item = new WatchlistItem
             {
                 UserId = user.Id,
                 MovieId = movieId,
-                Priority = priority,
-                Notes = notes ?? string.Empty,
                 CreatedAt = DateTime.UtcNow
             };
 
             _context.WatchlistItems.Add(item);
+
+            var activity = new Activity
+            {
+                UserId = user.Id,
+                MovieId = movieId,
+                Type = "Watchlist",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Activities.Add(activity);
+
+            await _context.SaveChangesAsync();
         }
-
-        var activity = new Activity
-        {
-            UserId = user.Id,
-            MovieId = movieId,
-            Type = "Watchlist",
-            Note = notes ?? string.Empty,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.Activities.Add(activity);
-
-        await _context.SaveChangesAsync();
 
         return RedirectToAction("Detail", new { id = movie.TmdbId });
     }
@@ -289,7 +273,7 @@ public class MoviesController : Controller
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> AddWatched(int movieId, string notes)
+    public async Task<IActionResult> AddWatched(int movieId)
     {
         var user = await _userManager.GetUserAsync(User);
 
@@ -305,8 +289,7 @@ public class MoviesController : Controller
         {
             UserId = user.Id,
             MovieId = movieId,
-            WatchedDate = DateTime.UtcNow,
-            Notes = notes ?? string.Empty
+            WatchedDate = DateTime.UtcNow
         };
 
         _context.WatchedMovies.Add(watchedItem);
@@ -316,7 +299,6 @@ public class MoviesController : Controller
             UserId = user.Id,
             MovieId = movieId,
             Type = "Watched",
-            Note = notes ?? string.Empty,
             CreatedAt = DateTime.UtcNow
         };
 

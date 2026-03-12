@@ -4,8 +4,6 @@
     ViewData["Title"] = "Film Detayı";
 }
 
-<h1>@Model.Movie.Title</h1>
-
 <div class="movie-detail-hero">
     <div class="movie-detail-poster">
         @if (!string.IsNullOrWhiteSpace(Model.Movie.PosterPath))
@@ -21,8 +19,7 @@
     <div class="movie-detail-info">
         <div class="movie-detail-heading">
             <h1>@Model.Movie.Title</h1>
-            @if (!string.IsNullOrWhiteSpace(Model.Movie.OriginalTitle) && Model.Movie.OriginalTitle !=
-                        Model.Movie.Title)
+            @if (!string.IsNullOrWhiteSpace(Model.Movie.OriginalTitle) && Model.Movie.OriginalTitle != Model.Movie.Title)
             {
                 <p class="original-title">@Model.Movie.OriginalTitle</p>
             }
@@ -64,186 +61,179 @@
     </div>
 </div>
 
-
-<hr />
-
-<div>
-    @if (User.Identity != null && User.Identity.IsAuthenticated)
-    {
-        <h3>İzledim</h3>
-
-        @if (Model.HasWatched)
-        {
-            <p><strong>Bu filmi @Model.WatchedCount kez izledin.</strong></p>
-        }
-
-        <form asp-action="AddWatched" method="post" class="mb-3">
-            <input type="hidden" name="movieId" value="@Model.Movie.Id" />
-
-            <div class="mb-3">
-                <label class="form-label">İzleme Notu</label>
-                <textarea name="notes" class="form-control" rows="3">@Model.WatchedNotes</textarea>
-            </div>
-
-            <button type="submit" class="btn btn-success">
-                @(Model.HasWatched ? "Tekrar İzledim Olarak Ekle" : "İzledim Olarak İşaretle")
-            </button>
-        </form>
-    }
-    else
-    {
-        <p>
-            İzledim listesi kullanmak için
-            <a asp-area="Identity" asp-page="/Account/Login">giriş yap</a>.
-        </p>
-    }
-
-
-    <hr />
-
+<div class="movie-detail-sections">
 
     @if (User.Identity != null && User.Identity.IsAuthenticated)
     {
-        <h3>Watchlist</h3>
+        <div class="detail-card">
+            <h3>İzledim</h3>
 
-        @if (TempData["WatchlistError"] != null)
-        {
-            <div class="alert alert-danger">
-                @TempData["WatchlistError"]
-            </div>
-        }
+            @if (Model.HasWatched)
+            {
+                <p class="mb-3"><strong>Bu filmi @Model.WatchedCount kez izledin.</strong></p>
+            }
 
-        <form asp-action="AddToWatchlist" method="post" class="mb-3">
-            <input type="hidden" name="movieId" value="@Model.Movie.Id" />
-
-            <div class="mb-3">
-                <label class="form-label">Öncelik</label>
-                <select name="priority" class="form-select">
-                    <option value="1" selected="@(Model.WatchlistPriority == 1 ? "selected" : null)">1 - Çok yüksek</option>
-                    <option value="2" selected="@(Model.WatchlistPriority == 2 ? "selected" : null)">2 - Yüksek</option>
-                    <option value="3" selected="@(Model.WatchlistPriority == 3 ? "selected" : null)">3 - Orta</option>
-                    <option value="4" selected="@(Model.WatchlistPriority == 4 ? "selected" : null)">4 - Düşük</option>
-                    <option value="5" selected="@(Model.WatchlistPriority == 5 ? "selected" : null)">5 - Çok düşük</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Not</label>
-                <textarea name="notes" class="form-control" rows="3">@Model.WatchlistNotes</textarea>
-            </div>
-
-            <button type="submit" class="btn btn-warning">
-                @(Model.IsInWatchlist ? "Watchlist'i Güncelle" : "Watchlist'e Ekle")
-            </button>
-        </form>
-
-        @if (Model.IsInWatchlist)
-        {
-            <form asp-action="RemoveFromWatchlist" method="post">
+            <form asp-action="AddWatched" method="post">
                 <input type="hidden" name="movieId" value="@Model.Movie.Id" />
-                <button type="submit" class="btn btn-outline-danger">Watchlist'ten Çıkar</button>
+
+                <button type="submit" class="btn btn-success">
+                    @(Model.HasWatched ? "Tekrar İzledim Olarak Ekle" : "İzledim Olarak İşaretle")
+                </button>
             </form>
-        }
+        </div>
     }
     else
     {
-        <p>
-            Watchlist kullanmak için
-            <a asp-area="Identity" asp-page="/Account/Login">giriş yap</a>.
-        </p>
+        <div class="detail-card">
+            <h3>İzledim</h3>
+            <p>
+                İzledim listesi kullanmak için
+                <a asp-area="Identity" asp-page="/Account/Login">giriş yap</a>.
+            </p>
+        </div>
     }
-
-
-
 
     @if (User.Identity != null && User.Identity.IsAuthenticated)
     {
-        <h3>Puan Ver / Yorum Yaz</h3>
+        <div class="detail-card">
+            <h3>Watchlist</h3>
 
-        @if (TempData["ReviewError"] != null)
-        {
-            <div class="alert alert-danger">
-                @TempData["ReviewError"]
-            </div>
-        }
+            @if (TempData["WatchlistError"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["WatchlistError"]
+                </div>
+            }
 
-        <form asp-action="AddReview" method="post">
-            <input type="hidden" name="movieId" value="@Model.Movie.Id" />
+            @if (!Model.IsInWatchlist)
+            {
+                <form asp-action="AddToWatchlist" method="post">
+                    <input type="hidden" name="movieId" value="@Model.Movie.Id" />
+                    <button type="submit" class="btn btn-warning">Watchlist'e Ekle</button>
+                </form>
+            }
+            else
+            {
+                <p class="mb-3"><strong>Bu film watchlist'inde.</strong></p>
 
-            <div class="mb-3">
-                <label class="form-label d-block">Puan</label>
+                <form asp-action="RemoveFromWatchlist" method="post">
+                    <input type="hidden" name="movieId" value="@Model.Movie.Id" />
+                    <button type="submit" class="btn btn-outline-danger">Watchlist'ten Çıkar</button>
+                </form>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="detail-card">
+            <h3>Watchlist</h3>
+            <p>
+                Watchlist kullanmak için
+                <a asp-area="Identity" asp-page="/Account/Login">giriş yap</a>.
+            </p>
+        </div>
+    }
 
-                <input type="hidden" id="ratingInput" name="rating"
-                    value="@(Model.UserRating?.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) ?? "")"
-                    required />
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <div class="detail-card">
+            <h3>Puan Ver / Yorum Yaz</h3>
 
-                <div class="star-rating-5" id="starRating">
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                        <div class="star-wrapper" data-star="@i">
-                            <svg class="star-svg star-bg" viewBox="0 0 24 24" aria-hidden="true">
-                                <path
-                                    d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.56L12 17.52 6.12 20.62l1.12-6.56L2.48 9.42l6.58-.96L12 2.5z" />
-                            </svg>
+            @if (TempData["ReviewError"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ReviewError"]
+                </div>
+            }
 
-                            <div class="star-fill-box">
-                                <svg class="star-svg star-fill" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path
-                                        d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.56L12 17.52 6.12 20.62l1.12-6.56L2.48 9.42l6.58-.96L12 2.5z" />
+            <form asp-action="AddReview" method="post">
+                <input type="hidden" name="movieId" value="@Model.Movie.Id" />
+
+                <div class="mb-3">
+                    <label class="form-label d-block">Puan</label>
+
+                    <input type="hidden"
+                           id="ratingInput"
+                           name="rating"
+                           value="@(Model.UserRating?.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) ?? "")"
+                           required />
+
+                    <div class="star-rating-5" id="starRating">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <div class="star-wrapper" data-star="@i">
+                                <svg class="star-svg star-bg" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.56L12 17.52 6.12 20.62l1.12-6.56L2.48 9.42l6.58-.96L12 2.5z" />
                                 </svg>
+
+                                <div class="star-fill-box">
+                                    <svg class="star-svg star-fill" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.56L12 17.52 6.12 20.62l1.12-6.56L2.48 9.42l6.58-.96L12 2.5z" />
+                                    </svg>
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
+
+                    <div class="mt-2">
+                        Seçilen puan:
+                        <strong id="ratingValue">
+                            @(Model.UserRating.HasValue ? Model.UserRating.Value.ToString("0.0") : "Yok")
+                        </strong>
+                    </div>
                 </div>
 
-                <div class="mt-2">
-                    Seçilen puan:
-                    <strong id="ratingValue">
-                        @(Model.UserRating.HasValue? Model.UserRating.Value.ToString("0.0") : "Yok")
-                    </strong>
+                <div class="mb-3">
+                    <label class="form-label">Yorum</label>
+                    <textarea name="comment" class="form-control" rows="4">@Model.UserComment</textarea>
                 </div>
-            </div>
 
-            <div class="mb-3">
-                <label class="form-label">Yorum</label>
-                <textarea name="comment" class="form-control" rows="4">@Model.UserComment</textarea>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Kaydet</button>
-        </form>
+                <button type="submit" class="btn btn-primary">
+                    @(Model.UserRating.HasValue || !string.IsNullOrWhiteSpace(Model.UserComment) ? "Güncelle" : "Kaydet")
+                </button>
+            </form>
+        </div>
     }
     else
     {
-        <p>
-            Yorum ve puan vermek için
-            <a asp-area="Identity" asp-page="/Account/Login">giriş yap</a>.
-        </p>
+        <div class="detail-card">
+            <h3>Puan Ver / Yorum Yaz</h3>
+            <p>
+                Yorum ve puan vermek için
+                <a asp-area="Identity" asp-page="/Account/Login">giriş yap</a>.
+            </p>
+        </div>
     }
 
-    <hr />
+    <div class="detail-card">
+        <h3>Yorumlar</h3>
 
-    <h3>Yorumlar</h3>
-
-    @if (Model.Reviews.Any())
-    {
-        foreach (var review in Model.Reviews)
+        @if (Model.Reviews.Any(r => !string.IsNullOrWhiteSpace(r.Comment)))
         {
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">@review.User.UserName</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        Puan: @review.Rating / 5
-                    </h6>
-                    <p class="card-text">@review.Comment</p>
-                    <small class="text-muted">@review.CreatedAt.ToLocalTime()</small>
+            @foreach (var review in Model.Reviews.Where(r => !string.IsNullOrWhiteSpace(r.Comment)))
+            {
+                <div class="stack-card">
+                    <div class="stack-card-header">
+                        <strong>@review.User.UserName</strong>
+
+                        <span class="review-rating-badge">
+                            ⭐ @review.Rating.ToString("0.0") / 5
+                        </span>
+                    </div>
+
+                    <p class="stack-card-text">@review.Comment</p>
+
+                    <small class="text-muted">
+                        @review.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                    </small>
                 </div>
-            </div>
+            }
         }
-    }
-    else
-    {
-        <p>Henüz yorum yok.</p>
-    }
+        else
+        {
+            <p>Henüz yorum yok.</p>
+        }
+    </div>
 </div>
 
 
@@ -292,16 +282,6 @@
         transform: scale(1.05);
     }
 
-    .movie-detail-sections {
-        max-width: 1180px;
-        margin: 0 auto 48px;
-        padding: 0 16px;
-    }
-
-    .movie-detail-sections > hr {
-        margin: 28px 0;
-    }
-    
 </style>
 
 
@@ -358,14 +338,16 @@
             });
         });
 
-        starContainer.addEventListener("mouseleave", function () {
-            const currentValue = parseFloat(ratingInput.value);
-            if (!isNaN(currentValue)) {
-                paintStars(currentValue);
-            } else {
-                paintStars(0);
-            }
-        });
+        if (starContainer) {
+            starContainer.addEventListener("mouseleave", function () {
+                const currentValue = parseFloat(ratingInput.value);
+                if (!isNaN(currentValue)) {
+                    paintStars(currentValue);
+                } else {
+                    paintStars(0);
+                }
+            });
+        }
 
         const initialValue = parseFloat(ratingInput.value);
         if (!isNaN(initialValue)) {

@@ -684,3 +684,27 @@ body {
   color: #6c757d;
   margin-bottom: 0;
 }
+
+.detail-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.detail-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.detail-card .form-control,
+.detail-card .form-select {
+  border-radius: 12px;
+}
+
+.detail-card .btn {
+  border-radius: 12px;
+}
