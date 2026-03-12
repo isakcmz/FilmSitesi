@@ -1,0 +1,106 @@
+@model FilmSitesi.Web.Models.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Profil";
+}
+
+<h1>@Model.UserName</h1>
+
+<hr />
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3>@Model.WatchedCount</h3>
+                <p>İzlenen Film</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3>@Model.WatchlistCount</h3>
+                <p>Watchlist</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3>@Model.ReviewCount</h3>
+                <p>Yorum</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<hr />
+
+<h3>Son İzlenen Filmler</h3>
+
+@if (Model.RecentWatched.Any())
+{
+    <div class="row">
+        @foreach (var item in Model.RecentWatched)
+        {
+            <div class="col-md-3 mb-3">
+                <div class="card">
+
+                    @if (!string.IsNullOrWhiteSpace(item.Movie.PosterPath))
+                    {
+                        <img class="card-img-top"
+                             src="@($"https://image.tmdb.org/t/p/w500{item.Movie.PosterPath}")" />
+                    }
+
+                    <div class="card-body">
+
+                        <h6>@item.Movie.Title</h6>
+
+                        <small>
+                            @item.WatchedDate.ToLocalTime().ToString("dd.MM.yyyy")
+                        </small>
+
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Henüz izlenen film yok.</p>
+}
+
+<hr />
+
+<h3>Son Yorumlar</h3>
+
+@if (Model.RecentReviews.Any())
+{
+    @foreach (var review in Model.RecentReviews)
+    {
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>@review.Movie.Title</h5>
+
+                <p>Puan: @review.Rating / 5</p>
+
+                <p>@review.Comment</p>
+
+            </div>
+
+        </div>
+    }
+}
+else
+{
+    <p>Henüz yorum yok.</p>
+}
