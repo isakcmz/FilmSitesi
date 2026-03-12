@@ -50,6 +50,25 @@ public class ProfileController : Controller
             .Take(5)
             .ToListAsync();
 
+        var recentActivities = await _context.Activities
+            .Include(a => a.Movie)
+            .Where(a => a.UserId == user.Id)
+            .OrderByDescending(a => a.CreatedAt)
+            .Take(10)
+            .Select(a => new ActivityViewModel
+            {
+                UserName = user.UserName ?? "",
+                MovieTitle = a.Movie.Title,
+                MovieTmdbId = a.Movie.TmdbId,
+                MoviePosterPath = a.Movie.PosterPath,
+                Type = a.Type,
+                Rating = a.Rating,
+                Note = a.Note,
+                CreatedAt = a.CreatedAt
+            })
+            .ToListAsync();
+
+
         var model = new ProfileViewModel
         {
             UserName = user.UserName ?? "",
@@ -57,7 +76,8 @@ public class ProfileController : Controller
             WatchlistCount = watchlistCount,
             ReviewCount = reviewCount,
             RecentWatched = recentWatched,
-            RecentReviews = recentReviews
+            RecentReviews = recentReviews,
+            RecentActivities = recentActivities
         };
 
         return View(model);

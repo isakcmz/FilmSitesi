@@ -32,7 +32,10 @@ public class HomeController : Controller
                 UserName = a.User.UserName ?? "",
                 MovieTitle = a.Movie.Title,
                 MovieTmdbId = a.Movie.TmdbId,
+                MoviePosterPath = a.Movie.PosterPath,
                 Type = a.Type,
+                Rating = a.Rating,
+                Note = a.Note,
                 CreatedAt = a.CreatedAt
             })
             .ToListAsync();

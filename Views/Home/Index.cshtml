@@ -1,58 +1,82 @@
 ﻿@model List<FilmSitesi.Web.Models.ViewModels.ActivityViewModel>
 
-<h2>Aktiviteler</h2>
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
 
-@if (Model.Any())
+<h2 class="mb-4">Topluluk Aktiviteleri</h2>
+
+@if (Model != null && Model.Any())
 {
     foreach (var activity in Model)
     {
-        <div class="card mb-2">
-            <div class="card-body">
-
-                <strong>@activity.UserName</strong>
-
-                @if (activity.Type == "Review")
-                {
-                    <span>
-                        <a asp-controller="Movies"
-                           asp-action="Detail"
-                           asp-route-id="@activity.MovieTmdbId">
-                           @activity.MovieTitle
-                        </a>
-                        filmine yorum yaptı
-                    </span>
-                }
-
-                @if (activity.Type == "Watched")
-                {
-                    <span>
-                        <a asp-controller="Movies"
-                           asp-action="Detail"
-                           asp-route-id="@activity.MovieTmdbId">
-                           @activity.MovieTitle
-                        </a>
-                        filmini izledi
-                    </span>
-                }
-
-                @if (activity.Type == "Watchlist")
-                {
-                    <span>
-                        <a asp-controller="Movies"
-                           asp-action="Detail"
-                           asp-route-id="@activity.MovieTmdbId">
-                           @activity.MovieTitle
-                        </a>
-                        filmini watchlist'e ekledi
-                    </span>
-                }
-
-                <div>
-                    <small class="text-muted">
-                        @activity.CreatedAt.ToLocalTime()
-                    </small>
+        <div class="card mb-3 shadow-sm">
+            <div class="row g-0">
+                <div class="col-md-2">
+                    @if (!string.IsNullOrWhiteSpace(activity.MoviePosterPath))
+                    {
+                        <img src="@($"https://image.tmdb.org/t/p/w300{activity.MoviePosterPath}")"
+                             class="img-fluid rounded-start"
+                             alt="@activity.MovieTitle" />
+                    }
                 </div>
 
+                <div class="col-md-10">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">
+                            <strong>@activity.UserName</strong>
+
+                            @if (activity.Type == "Review")
+                            {
+                                <span>
+                                    <a asp-controller="Movies"
+                                       asp-action="Detail"
+                                       asp-route-id="@activity.MovieTmdbId">
+                                        @activity.MovieTitle
+                                    </a>
+                                    filmine
+                                    <strong>@activity.Rating?.ToString("0.0") / 5</strong>
+                                    verdi
+                                </span>
+                            }
+                            else if (activity.Type == "Watched")
+                            {
+                                <span>
+                                    <a asp-controller="Movies"
+                                       asp-action="Detail"
+                                       asp-route-id="@activity.MovieTmdbId">
+                                        @activity.MovieTitle
+                                    </a>
+                                    filmini izledi
+                                </span>
+                            }
+                            else if (activity.Type == "Watchlist")
+                            {
+                                <span>
+                                    <a asp-controller="Movies"
+                                       asp-action="Detail"
+                                       asp-route-id="@activity.MovieTmdbId">
+                                        @activity.MovieTitle
+                                    </a>
+                                    filmini watchlist'e ekledi
+                                </span>
+                            }
+                        </h5>
+
+                        @if (!string.IsNullOrWhiteSpace(activity.Note))
+                        {
+                            <p class="card-text">
+                                @activity.Note
+                            </p>
+                        }
+
+                        <p class="card-text">
+                            <small class="text-muted">
+                                @activity.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                            </small>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     }

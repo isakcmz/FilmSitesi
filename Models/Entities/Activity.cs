@@ -12,5 +12,9 @@ public class Activity
 
     public string Type { get; set; } = string.Empty;
 
+    public double? Rating { get; set; }
+
+    public string Note { get; set; } = string.Empty;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -104,3 +104,53 @@ else
 {
     <p>Henüz yorum yok.</p>
 }
+
+
+<hr />
+
+
+<h3>Aktivitelerim</h3>
+
+@if (Model.RecentActivities != null && Model.RecentActivities.Any())
+{
+    foreach (var activity in Model.RecentActivities)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                @if (activity.Type == "Review")
+                {
+                    <p>
+                        <strong>@activity.MovieTitle</strong> filmine
+                        <strong>@activity.Rating?.ToString("0.0") / 5</strong>
+                        verdin.
+                    </p>
+                }
+                else if (activity.Type == "Watched")
+                {
+                    <p>
+                        <strong>@activity.MovieTitle</strong> filmini izledin.
+                    </p>
+                }
+                else if (activity.Type == "Watchlist")
+                {
+                    <p>
+                        <strong>@activity.MovieTitle</strong> filmini watchlist'ine ekledin.
+                    </p>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(activity.Note))
+                {
+                    <p>@activity.Note</p>
+                }
+
+                <small class="text-muted">
+                    @activity.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                </small>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p>Henüz aktiviten yok.</p>
+}

@@ -112,5 +112,13 @@ public class AppDbContext : IdentityDbContext<AppUser>
             .WithMany(m => m.Activities)
             .HasForeignKey(a => a.MovieId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Activity>()
+            .Property(a => a.Type)
+            .HasMaxLength(50);
+
+        modelBuilder.Entity<Activity>()
+            .Property(a => a.Note)
+            .HasMaxLength(1000);
     }
 }

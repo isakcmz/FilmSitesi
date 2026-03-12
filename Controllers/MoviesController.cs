@@ -139,6 +139,8 @@ public class MoviesController : Controller
             UserId = user.Id,
             MovieId = movieId,
             Type = "Review",
+            Rating = rating,
+            Note = comment ?? string.Empty,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -201,6 +203,7 @@ public class MoviesController : Controller
             UserId = user.Id,
             MovieId = movieId,
             Type = "Watchlist",
+            Note = notes ?? string.Empty,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -302,6 +305,7 @@ public class MoviesController : Controller
             UserId = user.Id,
             MovieId = movieId,
             Type = "Watched",
+            Note = notes ?? string.Empty,
             CreatedAt = DateTime.UtcNow
         };
 
