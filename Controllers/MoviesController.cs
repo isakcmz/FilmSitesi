@@ -134,6 +134,16 @@ public class MoviesController : Controller
             _context.Reviews.Add(review);
         }
 
+        var activity = new Activity
+        {
+            UserId = user.Id,
+            MovieId = movieId,
+            Type = "Review",
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Activities.Add(activity);
+
         await _context.SaveChangesAsync();
 
         return RedirectToAction("Detail", new { id = movie.TmdbId });
@@ -185,6 +195,16 @@ public class MoviesController : Controller
 
             _context.WatchlistItems.Add(item);
         }
+
+        var activity = new Activity
+        {
+            UserId = user.Id,
+            MovieId = movieId,
+            Type = "Watchlist",
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Activities.Add(activity);
 
         await _context.SaveChangesAsync();
 
@@ -276,6 +296,17 @@ public class MoviesController : Controller
         };
 
         _context.WatchedMovies.Add(watchedItem);
+
+        var activity = new Activity
+        {
+            UserId = user.Id,
+            MovieId = movieId,
+            Type = "Watched",
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Activities.Add(activity);
+
         await _context.SaveChangesAsync();
 
         return RedirectToAction("Detail", new { id = movie.TmdbId });
