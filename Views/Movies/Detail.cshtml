@@ -147,20 +147,24 @@ else
         <input type="hidden" name="movieId" value="@Model.Movie.Id" />
 
         <div class="mb-3">
-            <label class="form-label">Puan</label>
-            <select name="rating" class="form-select" required>
-                <option value="">Seçiniz</option>
-                <option value="0.5">0.5</option>
-                <option value="1">1</option>
-                <option value="1.5">1.5</option>
-                <option value="2">2</option>
-                <option value="2.5">2.5</option>
-                <option value="3">3</option>
-                <option value="3.5">3.5</option>
-                <option value="4">4</option>
-                <option value="4.5">4.5</option>
-                <option value="5">5</option>
-            </select>
+            <label class="form-label d-block">Puan</label>
+            
+            <input type="hidden" id="ratingInput" name="rating" required />
+
+            <div id="starRating" class="star-rating">
+                <span class="star" data-value="0.5">☆</span>
+                <span class="star" data-value="1">☆</span>
+                <span class="star" data-value="1.5">☆</span>
+                <span class="star" data-value="2">☆</span>
+                <span class="star" data-value="2.5">☆</span>
+                <span class="star" data-value="3">☆</span>
+                <span class="star" data-value="3.5">☆</span>
+                <span class="star" data-value="4">☆</span>
+                <span class="star" data-value="4.5">☆</span>
+                <span class="star" data-value="5">☆</span>
+            </div>
+
+            <div class="mt-2"> Seçilen Puan: <strong id="ratingValue">Yok</strong></div>
         </div>
 
         <div class="mb-3">
@@ -203,3 +207,62 @@ else
 {
     <p>Henüz yorum yok.</p>
 }
+
+
+
+
+<style>
+    .star-rating {
+        display: flex;
+        gap: 6px;
+        font-size: 2rem;
+        cursor: pointer;
+        user-select: none;
+        flex-wrap: wrap;
+    }
+
+    .star-rating .star {
+        color: #bbb;
+        transition: color 0.15s ease;
+    }
+
+    .star-rating .star.active {
+        color: #f5c518;
+    }
+
+    .star-rating .star:hover {
+        transform: scale(1.08);
+    }
+</style>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const stars = document.querySelectorAll("#starRating .star");
+        const ratingInput = document.getElementById("ratingInput");
+        const ratingValue = document.getElementById("ratingValue");
+
+        function updateStars(value) {
+            stars.forEach(star => {
+                const starValue = parseFloat(star.getAttribute("data-value"));
+
+                if (starValue <= value) {
+                    star.classList.add("active");
+                    star.textContent = "★";
+                } else {
+                    star.classList.remove("active");
+                    star.textContent = "☆";
+                }
+            });
+        }
+
+        stars.forEach(star => {
+            star.addEventListener("click", function () {
+                const value = parseFloat(this.getAttribute("data-value"));
+                ratingInput.value = value;
+                ratingValue.textContent = value.toFixed(1);
+                updateStars(value);
+            });
+        });
+    });
+</script>
