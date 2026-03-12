@@ -62,6 +62,16 @@ public class MoviesController : Controller
 
         if (user != null)
         {
+
+            var userReview = await _context.Reviews
+                .FirstOrDefaultAsync(r => r.UserId == user.Id && r.MovieId == movie.Id);
+
+            if (userReview != null)
+            {
+                viewModel.UserRating = userReview.Rating;
+                viewModel.UserComment = userReview.Comment;
+            }
+
             var watchlistItem = await _context.WatchlistItems
                 .FirstOrDefaultAsync(w => w.UserId == user.Id && w.MovieId == movie.Id);
 
@@ -83,6 +93,7 @@ public class MoviesController : Controller
                 viewModel.WatchedCount = watchedItems.Count;
                 viewModel.WatchedNotes = watchedItems.First().Notes;
             }
+            
         }
 
         return View(viewModel);

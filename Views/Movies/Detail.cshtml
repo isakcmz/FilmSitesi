@@ -148,28 +148,37 @@ else
 
         <div class="mb-3">
             <label class="form-label d-block">Puan</label>
-            
-            <input type="hidden" id="ratingInput" name="rating" required />
 
-            <div id="starRating" class="star-rating">
-                <span class="star" data-value="0.5">☆</span>
-                <span class="star" data-value="1">☆</span>
-                <span class="star" data-value="1.5">☆</span>
-                <span class="star" data-value="2">☆</span>
-                <span class="star" data-value="2.5">☆</span>
-                <span class="star" data-value="3">☆</span>
-                <span class="star" data-value="3.5">☆</span>
-                <span class="star" data-value="4">☆</span>
-                <span class="star" data-value="4.5">☆</span>
-                <span class="star" data-value="5">☆</span>
+            <input type="hidden" id="ratingInput" name="rating" value="@(Model.UserRating?.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) ?? "")" required />
+
+            <div class="star-rating-5" id="starRating">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <div class="star-wrapper" data-star="@i">
+                        <svg class="star-svg star-bg" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.56L12 17.52 6.12 20.62l1.12-6.56L2.48 9.42l6.58-.96L12 2.5z" />
+                        </svg>
+
+                        <div class="star-fill-box">
+                            <svg class="star-svg star-fill" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.56L12 17.52 6.12 20.62l1.12-6.56L2.48 9.42l6.58-.96L12 2.5z" />
+                            </svg>
+                        </div>
+                    </div>
+                }
             </div>
 
-            <div class="mt-2"> Seçilen Puan: <strong id="ratingValue">Yok</strong></div>
+            <div class="mt-2">
+                Seçilen puan:
+                <strong id="ratingValue">
+                    @(Model.UserRating.HasValue ? Model.UserRating.Value.ToString("0.0") : "Yok")
+                </strong>
+            </div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Yorum</label>
-            <textarea name="comment" class="form-control" rows="4"></textarea>
+            <textarea name="comment" class="form-control" rows="4">@Model.UserComment</textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">Kaydet</button>
@@ -212,57 +221,118 @@ else
 
 
 <style>
-    .star-rating {
+    .star-rating-5 {
         display: flex;
-        gap: 6px;
-        font-size: 2rem;
-        cursor: pointer;
+        gap: 10px;
+        align-items: center;
         user-select: none;
-        flex-wrap: wrap;
     }
 
-    .star-rating .star {
-        color: #bbb;
-        transition: color 0.15s ease;
+    .star-wrapper {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        cursor: pointer;
+        flex: 0 0 auto;
     }
 
-    .star-rating .star.active {
-        color: #f5c518;
+    .star-svg {
+        width: 38px;
+        height: 38px;
+        display: block;
     }
 
-    .star-rating .star:hover {
-        transform: scale(1.08);
+    .star-bg {
+        position: absolute;
+        inset: 0;
+        fill: #d1d5db;
+    }
+
+    .star-fill-box {
+        position: absolute;
+        inset: 0;
+        width: 0%;
+        overflow: hidden;
+        transition: width 0.12s ease;
+    }
+
+    .star-fill {
+        fill: #f5c518;
+    }
+
+    .star-wrapper:hover {
+        transform: scale(1.05);
     }
 </style>
 
 
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const stars = document.querySelectorAll("#starRating .star");
+        const starContainer = document.getElementById("starRating");
+        const starWrappers = document.querySelectorAll(".star-wrapper");
         const ratingInput = document.getElementById("ratingInput");
         const ratingValue = document.getElementById("ratingValue");
 
-        function updateStars(value) {
-            stars.forEach(star => {
-                const starValue = parseFloat(star.getAttribute("data-value"));
+        function paintStars(value) {
+            starWrappers.forEach((star, index) => {
+                const starNumber = index + 1;
+                const fill = star.querySelector(".star-fill-box");
 
-                if (starValue <= value) {
-                    star.classList.add("active");
-                    star.textContent = "★";
+                if (value >= starNumber) {
+                    fill.style.width = "100%";
+                } else if (value >= starNumber - 0.5) {
+                    fill.style.width = "50%";
                 } else {
-                    star.classList.remove("active");
-                    star.textContent = "☆";
+                    fill.style.width = "0%";
                 }
             });
         }
 
-        stars.forEach(star => {
-            star.addEventListener("click", function () {
-                const value = parseFloat(this.getAttribute("data-value"));
-                ratingInput.value = value;
-                ratingValue.textContent = value.toFixed(1);
-                updateStars(value);
+        function setRating(value) {
+            ratingInput.value = value.toFixed(1);
+            ratingValue.textContent = value.toFixed(1);
+            paintStars(value);
+        }
+
+        starWrappers.forEach((star, index) => {
+            star.addEventListener("mousemove", function (e) {
+                const rect = star.getBoundingClientRect();
+                const offsetX = e.clientX - rect.left;
+                const isLeftHalf = offsetX < rect.width / 2;
+
+                const starNumber = index + 1;
+                const hoverValue = isLeftHalf ? starNumber - 0.5 : starNumber;
+
+                paintStars(hoverValue);
+            });
+
+            star.addEventListener("click", function (e) {
+                const rect = star.getBoundingClientRect();
+                const offsetX = e.clientX - rect.left;
+                const isLeftHalf = offsetX < rect.width / 2;
+
+                const starNumber = index + 1;
+                const selectedValue = isLeftHalf ? starNumber - 0.5 : starNumber;
+
+                setRating(selectedValue);
             });
         });
+
+        starContainer.addEventListener("mouseleave", function () {
+            const currentValue = parseFloat(ratingInput.value);
+            if (!isNaN(currentValue)) {
+                paintStars(currentValue);
+            } else {
+                paintStars(0);
+            }
+        });
+
+        const initialValue = parseFloat(ratingInput.value);
+        if (!isNaN(initialValue)) {
+            paintStars(initialValue);
+        } else {
+            paintStars(0);
+        }
     });
 </script>
