@@ -14,6 +14,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<WatchlistItem> WatchlistItems => Set<WatchlistItem>();
     public DbSet<WatchedMovie> WatchedMovies => Set<WatchedMovie>();
+    public DbSet<Activity> Activities => Set<Activity>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -98,6 +99,18 @@ public class AppDbContext : IdentityDbContext<AppUser>
             .HasOne(w => w.Movie)
             .WithMany(m => m.WatchedMovies)
             .HasForeignKey(w => w.MovieId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Activity>()
+            .HasOne(a => a.User)
+            .WithMany(u => u.Activities)
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Activity>()
+            .HasOne(a => a.Movie)
+            .WithMany(m => m.Activities)
+            .HasForeignKey(a => a.MovieId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

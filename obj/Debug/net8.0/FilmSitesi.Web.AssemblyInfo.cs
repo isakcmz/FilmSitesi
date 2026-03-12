@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FilmSitesi.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+997d58d73d62bae0fa90da8ab4e5abbd85767b36")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b5d6c73bf1299daec612be3238f84a53a678152b")]
 [assembly: System.Reflection.AssemblyProductAttribute("FilmSitesi.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FilmSitesi.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

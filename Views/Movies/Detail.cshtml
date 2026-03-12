@@ -20,7 +20,7 @@
         <p><strong>Orijinal Ad:</strong> @Model.Movie.OriginalTitle</p>
         <p><strong>Çıkış Tarihi:</strong> @(Model.Movie.ReleaseDate?.ToString("dd.MM.yyyy") ?? "-")</p>
         <p><strong>Dil:</strong> @Model.Movie.OriginalLanguage</p>
-        <p><strong>TMDb Puanı:</strong> @Model.Movie.VoteAverage</p>
+        <p><strong>TMDb Puanı:</strong> @Model.Movie.VoteAverage.ToString("0.0")</p>
         <p><strong>Açıklama:</strong> @Model.Movie.Overview</p>
         <p>
             <strong>Kullanıcı Puanı:</strong>
