@@ -22,4 +22,8 @@ public class MovieDetailViewModel
     public int WatchedCount { get; set; }
     
     public string WatchedNotes { get; set; } = string.Empty;
+
+    public double AverageRating { get; set; }
+
+    public int RatingCount { get; set; }
 }

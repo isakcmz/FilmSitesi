@@ -22,6 +22,21 @@
         <p><strong>Dil:</strong> @Model.Movie.OriginalLanguage</p>
         <p><strong>TMDb Puanı:</strong> @Model.Movie.VoteAverage</p>
         <p><strong>Açıklama:</strong> @Model.Movie.Overview</p>
+        <p>
+            <strong>Kullanıcı Puanı:</strong>
+
+            @if (Model.RatingCount > 0)
+            {
+                <span>
+                    ⭐ @Model.AverageRating.ToString("0.0") / 5
+                    (@Model.RatingCount kişi)
+                </span>
+            }
+            else
+            {
+                <span>Henüz puan yok</span>
+            }
+        </p>
     </div>
 </div>
 

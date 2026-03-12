@@ -41,11 +41,22 @@ public class MoviesController : Controller
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
 
+        var averageRating = 0.0;
+        var ratingCount = reviews.Count;
+
+        if (ratingCount > 0)
+        {
+            averageRating = reviews.Average(r => r.Rating);
+        }
+
         var viewModel = new MovieDetailViewModel
         {
             Movie = movie,
-            Reviews = reviews
+            Reviews = reviews,
+            AverageRating = averageRating,
+            RatingCount = ratingCount
         };
+
 
         var user = await _userManager.GetUserAsync(User);
 
