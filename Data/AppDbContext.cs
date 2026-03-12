@@ -13,6 +13,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<Movie> Movies => Set<Movie>();
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<WatchlistItem> WatchlistItems => Set<WatchlistItem>();
+    public DbSet<WatchedMovie> WatchedMovies => Set<WatchedMovie>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -82,5 +83,21 @@ public class AppDbContext : IdentityDbContext<AppUser>
         modelBuilder.Entity<WatchlistItem>()
             .HasIndex(w => new { w.UserId, w.MovieId })
             .IsUnique();
+
+        modelBuilder.Entity<WatchedMovie>()
+            .Property(w => w.Notes)
+            .HasMaxLength(1000);
+
+        modelBuilder.Entity<WatchedMovie>()
+            .HasOne(w => w.User)
+            .WithMany(u => u.WatchedMovies)
+            .HasForeignKey(w => w.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<WatchedMovie>()
+            .HasOne(w => w.Movie)
+            .WithMany(m => m.WatchedMovies)
+            .HasForeignKey(w => w.MovieId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -25,4 +25,5 @@ public class Movie
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public List<Review> Reviews { get; set; } = new();
     public List<WatchlistItem> WatchlistItems { get; set; } = new();
+    public List<WatchedMovie> WatchedMovies { get; set; } = new();
 }
