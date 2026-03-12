@@ -60,6 +60,18 @@ public class MoviesController : Controller
                 viewModel.WatchlistPriority = watchlistItem.Priority;
                 viewModel.WatchlistNotes = watchlistItem.Notes;
             }
+
+            var watchedItems = await _context.WatchedMovies
+                .Where(w => w.UserId == user.Id && w.MovieId == movie.Id)
+                .OrderByDescending(w => w.WatchedDate)
+                .ToListAsync();
+
+            if (watchedItems.Any())
+            {
+                viewModel.HasWatched = true;
+                viewModel.WatchedCount = watchedItems.Count;
+                viewModel.WatchedNotes = watchedItems.First().Notes;
+            }
         }
 
         return View(viewModel);
@@ -228,6 +240,64 @@ public class MoviesController : Controller
         return View(items);
     }
 
+
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> AddWatched(int movieId, string notes)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+            return Challenge();
+
+        var movie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movieId);
+
+        if (movie == null)
+            return NotFound();
+
+        var watchedItem = new WatchedMovie
+        {
+            UserId = user.Id,
+            MovieId = movieId,
+            WatchedDate = DateTime.UtcNow,
+            Notes = notes ?? string.Empty
+        };
+
+        _context.WatchedMovies.Add(watchedItem);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Detail", new { id = movie.TmdbId });
+    }
+
+
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Watched()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+            return Challenge();
+
+        var items = await _context.WatchedMovies
+            .Include(w => w.Movie)
+            .Where(w => w.UserId == user.Id)
+            .OrderByDescending(w => w.WatchedDate)
+            .Select(w => new WatchedMovieViewModel
+            {
+                MovieId = w.MovieId,
+                TmdbId = w.Movie.TmdbId,
+                Title = w.Movie.Title,
+                PosterPath = w.Movie.PosterPath,
+                WatchedDate = w.WatchedDate,
+                Notes = w.Notes
+            })
+            .ToListAsync();
+
+        return View(items);
+    }
 
 
 

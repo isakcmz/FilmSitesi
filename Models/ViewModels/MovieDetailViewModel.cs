@@ -16,4 +16,10 @@ public class MovieDetailViewModel
     public int WatchlistPriority { get; set; } = 3;
 
     public string WatchlistNotes { get; set; } = string.Empty;
+
+    public bool HasWatched { get; set; }
+    
+    public int WatchedCount { get; set; }
+    
+    public string WatchedNotes { get; set; } = string.Empty;
 }

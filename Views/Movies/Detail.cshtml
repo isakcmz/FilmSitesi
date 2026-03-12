@@ -25,6 +25,41 @@
     </div>
 </div>
 
+
+<hr />
+
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <h3>İzledim</h3>
+
+    @if (Model.HasWatched)
+    {
+        <p><strong>Bu filmi @Model.WatchedCount kez izledin.</strong></p>
+    }
+
+    <form asp-action="AddWatched" method="post" class="mb-3">
+        <input type="hidden" name="movieId" value="@Model.Movie.Id" />
+
+        <div class="mb-3">
+            <label class="form-label">İzleme Notu</label>
+            <textarea name="notes" class="form-control" rows="3">@Model.WatchedNotes</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            @(Model.HasWatched ? "Tekrar İzledim Olarak Ekle" : "İzledim Olarak İşaretle")
+        </button>
+    </form>
+}
+else
+{
+    <p>
+        İzledim listesi kullanmak için
+        <a asp-area="Identity" asp-page="/Account/Login">giriş yap</a>.
+    </p>
+}
+
+
 <hr />
 
 
