@@ -928,3 +928,9 @@ main.pb-3 {
 .movie-poster {
   transition: transform 0.25s ease;
 }
+
+.profile-movie-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:18px;
+}
