@@ -3,6 +3,7 @@ using System;
 using FilmSitesi.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FilmSitesi.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260313125754_AddUserFollow")]
+    partial class AddUserFollow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -229,8 +232,7 @@ namespace FilmSitesi.Web.Migrations
 
                     b.HasIndex("FollowedId");
 
-                    b.HasIndex("FollowerId", "FollowedId")
-                        .IsUnique();
+                    b.HasIndex("FollowerId");
 
                     b.ToTable("UserFollows");
                 });
@@ -472,13 +474,13 @@ namespace FilmSitesi.Web.Migrations
                     b.HasOne("FilmSitesi.Web.Models.Entities.AppUser", "Followed")
                         .WithMany()
                         .HasForeignKey("FollowedId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FilmSitesi.Web.Models.Entities.AppUser", "Follower")
                         .WithMany()
                         .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Followed");

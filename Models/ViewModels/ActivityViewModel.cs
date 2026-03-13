@@ -10,4 +10,5 @@ public class ActivityViewModel
     public double? Rating { get; set; }
     public string Note { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public string UserId { get; set; } = string.Empty;
 }
