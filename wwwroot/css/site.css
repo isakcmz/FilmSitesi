@@ -392,7 +392,7 @@ body {
 }
 
 .movie-detail-info {
-  background: #fff;
+  background: #fcfcfd;
   border: 1px solid #e9ecef;
   border-radius: 22px;
   padding: 24px;
@@ -707,4 +707,128 @@ body {
 
 .detail-card .btn {
   border-radius: 12px;
+}
+
+.movie-detail-sections {
+  max-width: 1180px;
+  margin: 0 auto 48px;
+  padding: 0 16px;
+}
+
+.detail-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  padding: 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.detail-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.detail-card p:last-child {
+  margin-bottom: 0;
+}
+
+.detail-card .form-control,
+.detail-card .form-select {
+  border-radius: 14px;
+  border: 1px solid #dee2e6;
+  padding: 12px 14px;
+}
+
+.detail-card .form-control:focus,
+.detail-card .form-select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+  border-color: #86b7fe;
+}
+
+.detail-card .btn {
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+
+.detail-card .btn-success {
+  box-shadow: 0 8px 20px rgba(25, 135, 84, 0.18);
+}
+
+.detail-card .btn-warning {
+  box-shadow: 0 8px 20px rgba(255, 193, 7, 0.2);
+}
+
+.detail-card .btn-primary {
+  box-shadow: 0 8px 20px rgba(13, 110, 253, 0.18);
+}
+
+.detail-card .btn-outline-danger {
+  border-width: 1.5px;
+}
+
+.stack-card {
+  background: #f8f9fa;
+  border: 1px solid #eceff1;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.stack-card:last-child {
+  margin-bottom: 0;
+}
+
+.stack-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.stack-card-text {
+  color: #343a40;
+  line-height: 1.65;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+}
+
+.review-rating-badge {
+  display: inline-block;
+  background: #fff3bf;
+  color: #8a5d00;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.movie-detail-sections .alert {
+  border-radius: 14px;
+}
+
+@media (max-width: 768px) {
+  .detail-card {
+    padding: 18px;
+  }
+
+  .stack-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.rating-selected-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff8db;
+  color: #7a5a00;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 600;
 }
