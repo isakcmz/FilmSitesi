@@ -27,6 +27,7 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var currentUser = await _userManager.GetUserAsync(User);
+
         var followingIds = new List<string>();
 
         if (currentUser != null)
@@ -50,11 +51,9 @@ public class HomeController : Controller
             {
                 query = query.Where(a => followingIds.Contains(a.UserId));
             }
-            else
-            {
-                query = query.Where(a => false);
-            }
+        
         }
+
 
         var activities = await query
             .OrderByDescending(a => a.CreatedAt)
@@ -72,6 +71,8 @@ public class HomeController : Controller
                 CreatedAt = a.CreatedAt
             })
             .ToListAsync();
+
+        ViewBag.IsFollowingFeed = currentUser != null && followingIds.Any();
 
         return View(activities);
     }
