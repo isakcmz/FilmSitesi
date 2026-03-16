@@ -934,3 +934,12 @@ main.pb-3 {
   grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
   gap:18px;
 }
+
+.profile-stat-card.text-decoration-none {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.profile-stat-card.text-decoration-none:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
+}

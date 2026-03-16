@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
 namespace FilmSitesi.Web.Controllers;
 
@@ -181,6 +182,110 @@ public class ProfileController : Controller
         return RedirectToAction("Index", new { userId });
     }
 
+
+    
+
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Followers(string userId)
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        if(currentUser == null)
+            return Challenge();
+        
+        var targetUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (targetUser == null)
+            return NotFound();
+        
+        var followUsers = await _context.UserFollows
+            .Where(f => f.FollowedId == userId)
+            .Join(
+                _userManager.Users,
+                follow => follow.FollowerId,
+                user => user.Id,
+                (follow, user) => user
+            )
+            .ToListAsync();
+        
+        var result = new List<UserListItemViewModel>();
+
+        foreach(var user in followUsers)
+        {
+            var followersCount = await _context.UserFollows.CountAsync(f => f.FollowedId == user.Id);
+            var followingCount = await _context.UserFollows.CountAsync(f => f.FollowerId == user.Id);
+            var isFollowing = await _context.UserFollows.AnyAsync(f => f.FollowerId == currentUser.Id && f.FollowedId == user.Id);
+
+            result.Add(new UserListItemViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName ?? "",
+                FollowersCount = followersCount,
+                FollowingCount = followingCount,
+                IsFollowing = isFollowing
+            });
+        }
+
+        ViewBag.Title = $"{targetUser.UserName} - Takipçiler";
+        ViewBag.TargetUserId = targetUser.Id;
+        ViewBag.TargetUserName = targetUser.UserName;
+
+        return View(result);
+    }
+
+
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Following(string userId)
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        if (currentUser == null)
+            return Challenge();
+
+        var targetUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (targetUser == null)
+            return NotFound();
+
+        var followingUsers = await _context.UserFollows
+            .Where(f => f.FollowerId == userId)
+            .Join(
+                _userManager.Users,
+                follow => follow.FollowedId,
+                user => user.Id,
+                (follow, user) => user
+            )
+            .ToListAsync();
+
+        var result = new List<UserListItemViewModel>();
+
+        foreach (var user in followingUsers)
+        {
+            var followersCount = await _context.UserFollows.CountAsync(f => f.FollowedId == user.Id);
+            var followingCount = await _context.UserFollows.CountAsync(f => f.FollowerId == user.Id);
+            var isFollowing = await _context.UserFollows.AnyAsync(f =>
+                f.FollowerId == currentUser.Id && f.FollowedId == user.Id);
+
+            result.Add(new UserListItemViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName ?? "",
+                FollowersCount = followersCount,
+                FollowingCount = followingCount,
+                IsFollowing = isFollowing
+            });
+        }
+
+        ViewBag.Title = $"{targetUser.UserName} - Takip Ettikleri";
+        ViewBag.TargetUserId = targetUser.Id;
+        ViewBag.TargetUserName = targetUser.UserName;
+
+        return View(result);
+    }
 
 
 

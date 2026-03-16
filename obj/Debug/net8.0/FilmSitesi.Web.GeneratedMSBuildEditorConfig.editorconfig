@@ -50,6 +50,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTW92aWVzXFdhdGNobGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/MTA/FilmSitesi/FilmSitesi.Web/Views/Profile/Followers.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxGb2xsb3dlcnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/MTA/FilmSitesi/FilmSitesi.Web/Views/Profile/Following.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxGb2xsb3dpbmcuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/MTA/FilmSitesi/FilmSitesi.Web/Views/Profile/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
