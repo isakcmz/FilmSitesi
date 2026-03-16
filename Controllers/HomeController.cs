@@ -27,16 +27,33 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var currentUser = await _userManager.GetUserAsync(User);
-        var currentUserId = currentUser?.Id;
+        var followingIds = new List<string>();
+
+        if (currentUser != null)
+        {
+            followingIds = await _context.UserFollows
+                .Where(f => f.FollowerId == currentUser.Id)
+                .Select(f => f.FollowedId)
+                .ToListAsync();
+        }
 
         var query = _context.Activities
             .Include(a => a.User)
             .Include(a => a.Movie)
             .AsQueryable();
 
-        if (!string.IsNullOrEmpty(currentUserId))
+        if (currentUser != null)
         {
-            query = query.Where(a => a.UserId != currentUserId);
+            query = query.Where(a => a.UserId != currentUser.Id);
+
+            if (followingIds.Any())
+            {
+                query = query.Where(a => followingIds.Contains(a.UserId));
+            }
+            else
+            {
+                query = query.Where(a => false);
+            }
         }
 
         var activities = await query
