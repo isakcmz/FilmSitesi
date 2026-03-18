@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using FilmSitesi.Web.Data;
 using FilmSitesi.Web.Models.Entities;
 using FilmSitesi.Web.Models.ViewModels;
@@ -5,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using SQLitePCL;
 
 namespace FilmSitesi.Web.Controllers;
@@ -287,6 +290,68 @@ public class ProfileController : Controller
         return View(result);
     }
 
+
+
+
+
+    [Authorize]
+    [HttpGet]
+    public IActionResult Search(string? query)
+    {
+        var model = new UserSearchViewModel
+        {
+            Query = query ?? string.Empty
+        };
+
+        return View(model);
+    }
+
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> Search(UserSearchViewModel model)
+    {
+        var currentUser = await _userManager.GetUserAsync(User);
+
+        if (currentUser == null)
+            return Challenge();
+
+        if (string.IsNullOrWhiteSpace(model.Query))
+        {
+            model.Results = new List<UserListItemViewModel>();
+            return View(model);
+        }
+
+        var users = await _userManager.Users
+            .Where(u => u.UserName != null && u.UserName.Contains(model.Query))
+            .OrderBy(u => u.UserName)
+            .Take(20)
+            .ToListAsync();
+        
+        var results = new List<UserListItemViewModel>();
+
+        foreach (var user in users)
+        {
+            var followersCount = await _context.UserFollows.CountAsync(f => f.FollowedId == user.Id);
+            var followingCount = await _context.UserFollows.CountAsync(f => f.FollowerId == user.Id);
+            var isFollowing = await _context.UserFollows.AnyAsync(f =>
+                f.FollowerId == currentUser.Id && f.FollowedId == user.Id);
+
+            results.Add(new UserListItemViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName ?? "",
+                FollowersCount = followersCount,
+                FollowingCount = followingCount,
+                IsFollowing = isFollowing
+            });
+        }
+
+        model.Results = results;
+
+        return View(model);
+    
+    }
 
 
 }
