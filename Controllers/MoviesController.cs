@@ -388,12 +388,30 @@ public class MoviesController : Controller
         if (user == null)
             return Challenge();
 
+        var review = await _context.Reviews
+            .FirstOrDefaultAsync(r => r.Id == reviewId);
+
+        if (review == null)
+            return NotFound();
+
         var existing = await _context.ReviewLikes
             .FirstOrDefaultAsync(x => x.ReviewId == reviewId && x.UserId == user.Id);
 
         if (existing != null)
         {
             _context.ReviewLikes.Remove(existing);
+
+            var existingActivity = await _context.Activities
+                .FirstOrDefaultAsync(a =>
+                    a.UserId == user.Id &&
+                    a.MovieId == review.MovieId &&
+                    a.Type == "ReviewLike" &&
+                    a.Note == reviewId.ToString());
+
+            if (existingActivity != null)
+            {
+                _context.Activities.Remove(existingActivity);
+            }
         }
         else
         {
@@ -405,6 +423,17 @@ public class MoviesController : Controller
             };
 
             _context.ReviewLikes.Add(like);
+
+            var activity = new Activity
+            {
+                UserId = user.Id,
+                MovieId = review.MovieId,
+                Type = "ReviewLike",
+                Note = reviewId.ToString(),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Activities.Add(activity);
         }
 
         await _context.SaveChangesAsync();

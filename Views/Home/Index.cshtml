@@ -77,6 +77,18 @@
                                         filmini watchlist'e ekledi
                                     </span>
                                 }
+                                else if (activity.Type == "ReviewLike")
+                                {
+                                    <span>
+                                        <a asp-controller="Movies"
+                                        asp-action="Detail"
+                                        asp-route-id="@activity.MovieTmdbId"
+                                        class="movie-link">
+                                            @activity.MovieTitle
+                                        </a>
+                                        filmindeki bir yorumu beğendi
+                                    </span>
+                                }
                             </div>
 
                             <div class="activity-badge">
@@ -91,6 +103,10 @@
                                 else if (activity.Type == "Watchlist")
                                 {
                                     <span class="badge-watchlist">Watchlist</span>
+                                }
+                                else if (activity.Type == "ReviewLike")
+                                {
+                                    <span class="badge-like">Like</span>
                                 }
                             </div>
                         </div>
