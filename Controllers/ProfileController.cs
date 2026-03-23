@@ -322,11 +322,13 @@ public class ProfileController : Controller
             return View(model);
         }
 
-        var query = model.Query.ToLower();
+        var query = model.Query?.ToLower() ?? "";
 
         var users = await _userManager.Users
-            .Where(u => u.UserName != null && u.UserName.ToLower().Contains(query))
-            .OrderBy(u => u.UserName.ToLower().StartsWith(query) ? 0 : 1)
+            .Where(u => u.Id != currentUser.Id &&
+                        u.UserName != null &&
+                        u.UserName.ToLower().Contains(query))
+            .OrderBy(u => (u.UserName ?? "").ToLower().StartsWith(query) ? 0 : 1)
             .ThenBy(u => u.UserName)
             .Take(20)
             .ToListAsync();
