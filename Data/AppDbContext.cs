@@ -16,6 +16,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<WatchedMovie> WatchedMovies => Set<WatchedMovie>();
     public DbSet<Activity> Activities => Set<Activity>();
     public DbSet<UserFollow> UserFollows => Set<UserFollow>();
+    public DbSet<ReviewLike> ReviewLikes {  get; set;  }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -136,6 +137,16 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
         modelBuilder.Entity<UserFollow>()
             .HasIndex(uf => new { uf.FollowerId, uf.FollowedId })
+            .IsUnique();
+
+        modelBuilder.Entity<ReviewLike>()
+            .HasOne(rl => rl.Review)
+            .WithMany()
+            .HasForeignKey(rl => rl.ReviewId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ReviewLike>()
+            .HasIndex(rl => new { rl.ReviewId, rl.UserId })
             .IsUnique();
     }
 }
