@@ -386,7 +386,7 @@ public class MoviesController : Controller
         var user = await _userManager.GetUserAsync(User);
 
         if (user == null)
-            return Challenge();
+            return Unauthorized();
 
         var review = await _context.Reviews
             .FirstOrDefaultAsync(r => r.Id == reviewId);
@@ -396,6 +396,8 @@ public class MoviesController : Controller
 
         var existing = await _context.ReviewLikes
             .FirstOrDefaultAsync(x => x.ReviewId == reviewId && x.UserId == user.Id);
+
+        bool liked;
 
         if (existing != null)
         {
@@ -412,6 +414,8 @@ public class MoviesController : Controller
             {
                 _context.Activities.Remove(existingActivity);
             }
+
+            liked = false;
         }
         else
         {
@@ -434,11 +438,20 @@ public class MoviesController : Controller
             };
 
             _context.Activities.Add(activity);
+
+            liked = true;
         }
 
         await _context.SaveChangesAsync();
 
-        return Redirect(Request.Headers["Referer"].ToString());
+        var likeCount = await _context.ReviewLikes.CountAsync(x => x.ReviewId == reviewId);
+
+        return Json(new
+        {
+            success = true,
+            liked,
+            likeCount
+        });
     }
 
 
