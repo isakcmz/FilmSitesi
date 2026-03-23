@@ -326,7 +326,8 @@ public class ProfileController : Controller
 
         var users = await _userManager.Users
             .Where(u => u.UserName != null && u.UserName.ToLower().Contains(query))
-            .OrderBy(u => u.UserName)
+            .OrderBy(u => u.UserName.ToLower().StartsWith(query) ? 0 : 1)
+            .ThenBy(u => u.UserName)
             .Take(20)
             .ToListAsync();
         
